@@ -16,23 +16,28 @@ namespace Home2
         {
             get
             {
-                if (index < 0 || index >= array.Length)
-                    throw new ArgumentOutOfRangeException();
-                else
+                try
+                {
                     return array[index];
+                }
+                catch(ArgumentOutOfRangeException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return default;
+                }
             }
         }
 
         public int Count => array.Length;
 
-        public void Add(T a)
+        public void Add(T item)
         {
             T[] newArray = new T[array.Length + 1];
 
             for (int i = 0; i < array.Length; i++)
                 newArray[i] = array[i];
 
-            newArray[newArray.Length - 1] = a;
+            newArray[array.Length] = item;
             array = newArray;
         }
 
@@ -43,13 +48,20 @@ namespace Home2
 
         public bool Contains(T item)
         {
-            return array.Any(x => x.Equals(item));
+            return array.Contains(item);
         }
+    }
 
-        //public static T[] GetArray<T>(this MyList<T> list)
-        //{
+    public static class ExtensionClass
+    {
+        public static T[] GetArray<T>(this MyList<T> list)
+        {
+            T[] array = new T[list.Count];
 
-        //    return null;
-        //}
+            for (int i = 0; i < array.Length; i++)
+                array[i] = list[i];
+
+            return array;
+        }
     }
 }
