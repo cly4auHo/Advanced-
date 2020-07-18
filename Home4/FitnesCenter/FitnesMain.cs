@@ -25,7 +25,7 @@ namespace Home4.FitnesCenter
                       where customer.Session == minSession
                       select customer;
 
-            Customer target = res.ToList()[res.ToList().Count - 1];        
+            Customer target = res.ToList()[res.ToList().Count - 1];
             Console.WriteLine(target);
             Console.ReadKey();
         }
