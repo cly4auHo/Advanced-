@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30128.74
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GZIPer", "GZIPer.csproj", "{630F390C-9F6C-47D2-8674-729558DA8EAD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{630F390C-9F6C-47D2-8674-729558DA8EAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{630F390C-9F6C-47D2-8674-729558DA8EAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{630F390C-9F6C-47D2-8674-729558DA8EAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{630F390C-9F6C-47D2-8674-729558DA8EAD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8CC7BF4C-2541-4454-8EC4-D5B9B434E5A7}
+	EndGlobalSection
+EndGlobal
