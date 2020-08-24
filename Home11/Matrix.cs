@@ -5,25 +5,23 @@ namespace Home11
 {
     public class Matrix
     {
-        private readonly char[] chars;
-        private readonly Random random;
+        private readonly char[] chars = "$%#!*abcdefghijklmnopqrstuvwxyz1234567890?:ABCDEFGHIJKLMNOPQRSTUVWXYZ^&".ToCharArray();
+        private readonly Random random = new Random();
+        private readonly object locker = new object();
         private readonly int width;
         private readonly int height;
-        private readonly object locker;
-        private static volatile Barrier barrier;
         private static volatile char[,] matrix;
         private const ConsoleColor firstColor = ConsoleColor.White;
         private const ConsoleColor secondColor = ConsoleColor.Green;
         private const ConsoleColor otherColor = ConsoleColor.DarkGreen;
-        private const ConsoleColor emptyColor = ConsoleColor.Black;
         private const char emptyChar = ' ';
-        private const int sleepTime = 200;
+        private const int sleepTime = 100;
         private const int minLenghtStripe = 7;
 
         private void StripeChange(object index)
         {
             int column = (int)index;
-            int stripeLenght = random.Next(minLenghtStripe, height - minLenghtStripe);
+            int stripeLenght = -1;
 
             while (true)
             {
@@ -53,44 +51,29 @@ namespace Home11
                         {
                             if (row + 1 < height)
                             {
-                                Console.ForegroundColor = firstColor;
-                                Console.SetCursorPosition(column, row + 1);
                                 char c = GetRandomChar();
                                 matrix[row + 1, column] = c;
-                                Console.Write(c);
+                                WriteChar(c, column, row + 1, firstColor);
                             }
 
                             if (row < height)
                             {
-                                Console.ForegroundColor = secondColor;
-                                Console.SetCursorPosition(column, row);
-                                Console.Write(matrix[row, column]);
+                                WriteChar(matrix[row, column], column, row, secondColor);
                             }
 
                             if (row - 1 < height && row - 1 >= 0)
                             {
-                                Console.ForegroundColor = otherColor;
-                                Console.SetCursorPosition(column, row - 1);
-                                Console.Write(matrix[row - 1, column]);
+                                WriteChar(matrix[row - 1, column], column, row - 1, otherColor);
                             }
 
-                            if (stripeLenght > 0)
+
+                            if (row - stripeLenght - 1 >= 0)
                             {
-                                if (row - stripeLenght - 1 >= 0)
-                                {
-                                    matrix[row - stripeLenght - 1, column] = emptyChar;
-                                    DeleteChar(column, row - stripeLenght - 1);
-                                }
-                            }
-                            else
-                            {
-                                matrix[height - 1, column] = emptyChar;
-                                DeleteChar(column, height - 1);
+                                DeleteChar(column, row - stripeLenght - 1);
                             }
 
                             if (!matrix[height - 1, column].Equals(emptyChar))
                             {
-                                matrix[row - stripeLenght, column] = emptyChar;
                                 DeleteChar(column, row - stripeLenght);
                                 stripeLenght--;
                             }
@@ -102,9 +85,14 @@ namespace Home11
                     if (StripeIsEmpty(column))
                         stripeLenght = -1;
                 }
-
-                barrier.SignalAndWait();
             }
+        }
+
+        private void WriteChar(char c, int left, int top, ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+            Console.SetCursorPosition(left, top);
+            Console.Write(c);
         }
 
         private char GetRandomChar()
@@ -123,22 +111,16 @@ namespace Home11
 
         private void DeleteChar(int left, int top)
         {
+            matrix[top, left] = emptyChar;
             Console.SetCursorPosition(left, top);
-            Console.ForegroundColor = emptyColor;
             Console.Write(emptyChar);
         }
 
         public Matrix()
         {
-            chars = "$%#@!*abcdefghijklmnopqrstuvwxyz1234567890?;:ABCDEFGHIJKLMNOPQRSTUVWXYZ^&".ToCharArray();
-            random = new Random();
-            locker = new object();
             width = Console.WindowWidth;
             height = Console.WindowHeight;
-            barrier = new Barrier(width);
             matrix = new char[height, width];
-            Console.WindowLeft = Console.WindowTop = 0;
-            Console.SetWindowPosition(0, 0);
             Console.CursorVisible = false;
 
             for (int row = 0; row < height; row++)
