@@ -5,7 +5,7 @@ namespace Home11
 {
     public class Matrix
     {
-        private readonly char[] chars = "$%#!*abcdefghijklmnopqrstuvwxyz1234567890?:ABCDEFGHIJKLMNOPQRSTUVWXYZ^&".ToCharArray();
+        private readonly char[] chars = "$%#!*abcdefghijklmnopqrstuvwxyz1234567890?:^&".ToCharArray();
         private readonly Random random = new Random();
         private readonly object locker = new object();
         private readonly int width;
@@ -15,8 +15,8 @@ namespace Home11
         private const ConsoleColor secondColor = ConsoleColor.Green;
         private const ConsoleColor otherColor = ConsoleColor.DarkGreen;
         private const char emptyChar = ' ';
-        private const int sleepTime = 100;
-        private const int minLenghtStripe = 7;
+        private const int sleepTime = 150;
+        private const int minLenghtStripe = 5;
 
         private void StripeChange(object index)
         {
@@ -32,58 +32,38 @@ namespace Home11
 
                 lock (locker)
                 {
+                    if (StripeIsEmpty(column))
+                    {
+                        char c = GetRandomChar();
+                        matrix[0, column] = c;
+                        WriteChar(c, column, 0, firstColor);
+                    }
+
                     for (int row = height - 1; row >= 0; row--)
                     {
-                        if (StripeIsEmpty(column))
+                        if (!matrix[row, column].Equals(emptyChar))
                         {
-                            Console.SetCursorPosition(column, 0);
-                            Console.ForegroundColor = firstColor;
-                            char c = GetRandomChar();
-                            matrix[0, column] = c;
-                            Console.Write(c);
-                            break;
-                        }
-                        else if (matrix[row, column].Equals(emptyChar))
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            if (row + 1 < height)
+                            if (row - stripeLenght >= 0)
+                                DeleteChar(column, row - stripeLenght);
+
+                            if (row != height - 1)
                             {
                                 char c = GetRandomChar();
                                 matrix[row + 1, column] = c;
                                 WriteChar(c, column, row + 1, firstColor);
-                            }
-
-                            if (row < height)
-                            {
                                 WriteChar(matrix[row, column], column, row, secondColor);
+
+                                if ( row - 1 >= 0)
+                                    WriteChar(matrix[row - 1, column], column, row - 1, otherColor);
                             }
-
-                            if (row - 1 < height && row - 1 >= 0)
+                            else
                             {
-                                WriteChar(matrix[row - 1, column], column, row - 1, otherColor);
-                            }
-
-
-                            if (row - stripeLenght - 1 >= 0)
-                            {
-                                DeleteChar(column, row - stripeLenght - 1);
-                            }
-
-                            if (!matrix[height - 1, column].Equals(emptyChar))
-                            {
-                                DeleteChar(column, row - stripeLenght);
                                 stripeLenght--;
                             }
 
                             break;
                         }
                     }
-
-                    if (StripeIsEmpty(column))
-                        stripeLenght = -1;
                 }
             }
         }
