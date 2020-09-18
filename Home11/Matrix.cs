@@ -6,8 +6,7 @@ namespace Home11
     public class Matrix
     {
         private readonly char[] chars = "$%#!*abcdefghijklmnopqrstuvwxyz1234567890?:^&".ToCharArray();
-        private readonly Random random = new Random();
-        private readonly object locker = new object();
+        private readonly Random random = new Random();   
         private readonly int width;
         private readonly int height;
         private static volatile char[,] matrix;
@@ -30,7 +29,7 @@ namespace Home11
                 if (stripeLenght < 0)
                     stripeLenght = random.Next(minLenghtStripe, height - minLenghtStripe);
 
-                lock (locker)
+                lock (matrix)
                 {
                     if (StripeIsEmpty(column))
                     {
@@ -38,32 +37,34 @@ namespace Home11
                         matrix[0, column] = c;
                         WriteChar(c, column, 0, firstColor);
                     }
-
-                    for (int row = height - 1; row >= 0; row--)
+                    else
                     {
-                        if (!matrix[row, column].Equals(emptyChar))
+                        for (int row = height - 1; row >= 0; row--)
                         {
-                            if (row - stripeLenght >= 0)
-                                DeleteChar(column, row - stripeLenght);
-
-                            if (row != height - 1)
+                            if (!matrix[row, column].Equals(emptyChar))
                             {
-                                char c = GetRandomChar();
-                                matrix[row + 1, column] = c;
-                                WriteChar(c, column, row + 1, firstColor);
-                                WriteChar(matrix[row, column], column, row, secondColor);
+                                if (row - stripeLenght >= 0)
+                                    DeleteChar(column, row - stripeLenght);
 
-                                if ( row - 1 >= 0)
-                                    WriteChar(matrix[row - 1, column], column, row - 1, otherColor);
-                            }
-                            else
-                            {
-                                stripeLenght--;
-                            }
+                                if (row != height - 1)
+                                {
+                                    char c = GetRandomChar();
+                                    matrix[row + 1, column] = c;
+                                    WriteChar(c, column, row + 1, firstColor);
+                                    WriteChar(matrix[row, column], column, row, secondColor);
 
-                            break;
+                                    if (row - 1 >= 0)
+                                        WriteChar(matrix[row - 1, column], column, row - 1, otherColor);
+                                }
+                                else
+                                {
+                                    stripeLenght--;
+                                }
+
+                                break;
+                            }
                         }
-                    }
+                    }                  
                 }
             }
         }
