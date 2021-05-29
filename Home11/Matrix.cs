@@ -5,17 +5,19 @@ namespace Home11
 {
     public class Matrix
     {
-        private readonly char[] chars = "$%#!*abcdefghijklmnopqrstuvwxyz1234567890?:^&".ToCharArray();
-        private readonly Random random = new Random();   
+        private readonly char[] chars = "$%#!*abcdefghijklmnopqrstuvwxyz1234567890?:^&▲▼".ToCharArray();
+        private readonly Random random;
         private readonly int width;
         private readonly int height;
-        private static volatile char[,] matrix;
+        private volatile char[,] matrix;
         private const ConsoleColor firstColor = ConsoleColor.White;
         private const ConsoleColor secondColor = ConsoleColor.Green;
         private const ConsoleColor otherColor = ConsoleColor.DarkGreen;
         private const char emptyChar = ' ';
-        private const int sleepTime = 150;
-        private const int minLenghtStripe = 5;
+        private const int sleepTime = 50;
+        private const int minLenghtStripe = 7;
+
+        private char GetRandomChar => chars[random.Next(chars.Length)];
 
         private void StripeChange(object index)
         {
@@ -33,7 +35,7 @@ namespace Home11
                 {
                     if (StripeIsEmpty(column))
                     {
-                        char c = GetRandomChar();
+                        char c = GetRandomChar;
                         matrix[0, column] = c;
                         WriteChar(c, column, 0, firstColor);
                     }
@@ -48,7 +50,7 @@ namespace Home11
 
                                 if (row != height - 1)
                                 {
-                                    char c = GetRandomChar();
+                                    char c = GetRandomChar;
                                     matrix[row + 1, column] = c;
                                     WriteChar(c, column, row + 1, firstColor);
                                     WriteChar(matrix[row, column], column, row, secondColor);
@@ -64,7 +66,7 @@ namespace Home11
                                 break;
                             }
                         }
-                    }                  
+                    }
                 }
             }
         }
@@ -76,9 +78,11 @@ namespace Home11
             Console.Write(c);
         }
 
-        private char GetRandomChar()
+        private void DeleteChar(int left, int top)
         {
-            return chars[random.Next(chars.Length)];
+            matrix[top, left] = emptyChar;
+            Console.SetCursorPosition(left, top);
+            Console.Write(emptyChar);
         }
 
         private bool StripeIsEmpty(int index)
@@ -90,19 +94,15 @@ namespace Home11
             return true;
         }
 
-        private void DeleteChar(int left, int top)
-        {
-            matrix[top, left] = emptyChar;
-            Console.SetCursorPosition(left, top);
-            Console.Write(emptyChar);
-        }
-
         public Matrix()
         {
+            Console.WindowWidth = Console.LargestWindowWidth;
+            Console.WindowHeight = Console.LargestWindowHeight;
+            Console.CursorVisible = false;
+            random = new Random();
             width = Console.WindowWidth;
             height = Console.WindowHeight;
             matrix = new char[height, width];
-            Console.CursorVisible = false;
 
             for (int row = 0; row < height; row++)
                 for (int column = 0; column < width; column++)
